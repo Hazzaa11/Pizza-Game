@@ -126,9 +126,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0368fdbeda94c2349b6467ead5a9533d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 17
-  acceleration: 100
-  deceleration: 100
+  pizzaPrefab: {fileID: 8294138005722588093, guid: 71f034b7795cb01429eddabbbf406d30, type: 3}
+  cookedPizzaPrefab: {fileID: 4538747206896162943, guid: f9fed348b81d4254e948e6a7daf1f96c, type: 3}
+  cookingTime: 5
+  moveSpeed: 36
 --- !u!58 &2800093351433383558
 CircleCollider2D:
   m_ObjectHideFlags: 0

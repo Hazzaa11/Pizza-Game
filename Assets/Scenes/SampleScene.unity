@@ -1169,8 +1169,8 @@ Transform:
   m_GameObject: {fileID: 1741850793}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.4611, y: -0.202, z: 0}
-  m_LocalScale: {x: 0.09309963, y: 0.14519393, z: 1}
+  m_LocalPosition: {x: -0.45694, y: -0.202, z: 0}
+  m_LocalScale: {x: 0.084785834, y: 0.14519393, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1216724187}
@@ -1529,18 +1529,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 8533419193939005998, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
-      propertyPath: moveSpeed
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 8533419193939005998, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
-      propertyPath: pizzaPrefab
-      value: 
-      objectReference: {fileID: 8294138005722588093, guid: 71f034b7795cb01429eddabbbf406d30, type: 3}
-    - target: {fileID: 8533419193939005998, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
-      propertyPath: cookedPizzaPrefab
-      value: 
-      objectReference: {fileID: 4538747206896162943, guid: f9fed348b81d4254e948e6a7daf1f96c, type: 3}
     - target: {fileID: 9218701808169118516, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

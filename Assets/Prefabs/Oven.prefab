@@ -144,8 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9fda15d5514ac4449ba82d3ebb82950, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cookingTime: 7
-  cookedPizzaPrefab: {fileID: 4538747206896162943, guid: f9fed348b81d4254e948e6a7daf1f96c, type: 3}
 --- !u!1 &2982667731118088730
 GameObject:
   m_ObjectHideFlags: 0

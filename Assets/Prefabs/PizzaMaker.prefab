@@ -144,7 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e51ec4b5f1234c4ea6eb51f20f978f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pizzaPrefab: {fileID: 8294138005722588093, guid: 71f034b7795cb01429eddabbbf406d30, type: 3}
 --- !u!1 &7028234182170704436
 GameObject:
   m_ObjectHideFlags: 0
