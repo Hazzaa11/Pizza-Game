@@ -11,6 +11,26 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f; // Serialized field for movement speed
     private Rigidbody2D rb; // Reference to the Rigidbody2D component
     private bool cookedPizzaAvailable = false; // Track if a cooked pizza is ready to be picked up
+    public Vector2 MovementSpeed = new Vector2(100.0f, 100.0f); // 2D Movement speed to have independant axis speed
+    private new Rigidbody2D rigidbody2D; // Local rigidbody variable to hold a reference to the attached Rigidbody2D component
+    private Vector2 inputVector = new Vector2(0.0f, 0.0f);
+
+    void Awake()
+    {
+        // Setup Rigidbody for frictionless top down movement and dynamic collision
+        // If RequireComponent is used uncomment the GetComponent and comment the AddComponent out
+        rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
+
+        rigidbody2D.angularDrag = 0.0f;
+        rigidbody2D.gravityScale = 0.0f;
+    }
+
+    void FixedUpdate()
+    {
+        // Rigidbody2D affects physics so any ops on it should happen in FixedUpdate
+        // See why here: https://learn.unity.com/tutorial/update-and-fixedupdate#
+        rigidbody2D.MovePosition(rigidbody2D.position + (inputVector * MovementSpeed * Time.fixedDeltaTime));
+    }
 
     private void Start()
     {
@@ -19,23 +39,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Get input from the axes
-        float horizontalInput = Input.GetAxis("Horizontal"); // A/D or Left/Right arrows
-        float verticalInput = Input.GetAxis("Vertical"); // W/S or Up/Down arrows
-        Vector2 movement = new Vector2(horizontalInput, verticalInput);
+        inputVector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
-        if (movement.magnitude > 1)
-        {
-            movement.Normalize();
-        }
-
-        rb.velocity = movement * moveSpeed; // Directly set the velocity for instant stopping
-
-        // If there's no movement, set velocity to zero
-        if (movement.magnitude == 0)
-        {
-            rb.velocity = Vector2.zero; // Stop the player instantly
-        }
 
         // Check for interaction input
         if (Input.GetKeyDown(KeyCode.E))

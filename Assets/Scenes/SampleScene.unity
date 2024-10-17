@@ -1124,7 +1124,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8533419193939005998, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
       propertyPath: moveSpeed
-      value: 20
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8533419193939005998, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
+      propertyPath: MovementSpeed.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8533419193939005998, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
+      propertyPath: MovementSpeed.y
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 9218701808169118516, guid: 480fd802c7e2e254ab068fe750ffeb3a, type: 3}
       propertyPath: m_LocalPosition.x
