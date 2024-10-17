@@ -7,10 +7,10 @@ public class PlayerController : MonoBehaviour
     public GameObject cookedPizzaPrefab; // Reference to the cooked pizza prefab
     private GameObject currentPizza; // The pizza currently being held
     private bool isCooking = false; // Track if the oven is cooking
-    private bool isCooked = false; // Track if the pizza is cooked
     public float cookingTime = 5f; // Serialized field for cooking time
     public float moveSpeed = 5f; // Serialized field for movement speed
     private Rigidbody2D rb; // Reference to the Rigidbody2D component
+    private bool cookedPizzaAvailable = false; // Track if a cooked pizza is ready to be picked up
 
     private void Start()
     {
@@ -54,17 +54,18 @@ public class PlayerController : MonoBehaviour
         }
         else if (IsInZone("OvenZone"))
         {
+            // If the player is in the oven zone
             if (currentPizza != null && !isCooking)
             {
                 StartCooking();
             }
-            else if (isCooked) // Check if the pizza is cooked
+            else if (isCooking)
             {
-                PickUpCookedPizza(); // Allow player to pick up the cooked pizza
+                Debug.Log("Oven Full!"); // Cannot insert a pizza while one is cooking
             }
-            else
+            else if (!isCooking && cookedPizzaAvailable)
             {
-                Debug.Log("Oven Full!");
+                PickUpCookedPizza(); // Only allow pickup if there is a cooked pizza available
             }
         }
         else if (IsInZone("ServingZone"))
@@ -99,28 +100,29 @@ public class PlayerController : MonoBehaviour
 
     private void StartCooking()
     {
-        Destroy(currentPizza); // Destroy the pizza being held
-        isCooking = true;
-        isCooked = false; // Reset the cooked state
-        StartCoroutine(CookPizza());
+        if (!cookedPizzaAvailable) // Only start cooking if there is no cooked pizza available
+        {
+            Destroy(currentPizza); // Destroy the pizza being held 
+            isCooking = true;
+            StartCoroutine(CookPizza());
+        }
     }
 
     private IEnumerator CookPizza() // Coroutine to cook pizza
     {
-        yield return new WaitForSeconds(cookingTime); // Cooking time (can be set as serialized field)
+        yield return new WaitForSeconds(cookingTime); // Cooking time
         isCooking = false;
-        isCooked = true; // Set pizza as cooked
-        Debug.Log("Pizza has been cooked!");
+        cookedPizzaAvailable = true; // Set the flag that a cooked pizza is ready
+        Debug.Log("Pizza has been cooked!"); // Notify that the pizza is cooked
     }
 
     private void PickUpCookedPizza()
     {
-        if (IsInZone("OvenZone") && isCooked) // Ensure in the OvenZone and pizza is cooked
-        {
-            currentPizza = Instantiate(cookedPizzaPrefab, transform.position, Quaternion.identity);
-            currentPizza.transform.SetParent(transform); // Attach cooked pizza to player
-            isCooked = false; // Reset the cooked state after picking up
-        }
+        // Instantiate the cooked pizza prefab and attach it to the player
+        currentPizza = Instantiate(cookedPizzaPrefab, transform.position, Quaternion.identity);
+        currentPizza.transform.SetParent(transform); // Attach pizza to player
+        cookedPizzaAvailable = false; // Reset the flag after picking it up
+        Debug.Log("Picked up cooked pizza!");
     }
 
     private void ServePizza()
