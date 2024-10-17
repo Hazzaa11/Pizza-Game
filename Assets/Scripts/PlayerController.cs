@@ -10,10 +10,13 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 currentVelocity;  // Keeps track of player's velocity
     private Rigidbody2D rb;
+    private PizzaMaker pizzaMaker; // Reference to the PizzaMaker script
+    private bool isHoldingPizza = false; // To track if the player is holding a pizza
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        pizzaMaker = FindObjectOfType<PizzaMaker>(); // Get the PizzaMaker instance
     }
 
     private void Update()
@@ -36,5 +39,25 @@ public class PlayerController : MonoBehaviour
 
         // Apply the movement to the Rigidbody2D
         rb.velocity = currentVelocity;
+
+        // Check for interaction key (E) and if player is in the PizzaMaker zone and not holding a pizza
+        if (Input.GetKeyDown(KeyCode.E) && IsInPizzaMakerZone() && !isHoldingPizza)
+        {
+            isHoldingPizza = true; // Set the flag to true when spawning pizza
+            pizzaMaker.SpawnPizza(transform); // Pass the player's transform
+        }
+    }
+
+    // Placeholder for checking if the player is in the PizzaMaker zone
+    private bool IsInPizzaMakerZone()
+    {
+        // Call the method from PizzaMaker
+        return pizzaMaker.IsPlayerInZone(this.transform);
+    }
+
+    // Method to set the holding pizza status
+    public void SetHoldingPizza(bool holding)
+    {
+        isHoldingPizza = holding; // Update the holding status
     }
 }
