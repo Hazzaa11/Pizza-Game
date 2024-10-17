@@ -31,6 +31,12 @@ public class PlayerController : MonoBehaviour
 
         rb.velocity = movement * moveSpeed; // Directly set the velocity for instant stopping
 
+        // If there's no movement, set velocity to zero
+        if (movement.magnitude == 0)
+        {
+            rb.velocity = Vector2.zero; // Stop the player instantly
+        }
+
         // Check for interaction input
         if (Input.GetKeyDown(KeyCode.E))
         {
