@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     public GameObject cookedPizzaPrefab; // Reference to the cooked pizza prefab
     private GameObject currentPizza; // The pizza currently being held
     private bool isCooking = false; // Track if the oven is cooking
+    private bool isCooked = false; // Track if the pizza is cooked
     public float cookingTime = 5f; // Serialized field for cooking time
     public float moveSpeed = 5f; // Serialized field for movement speed
     private Rigidbody2D rb; // Reference to the Rigidbody2D component
@@ -57,6 +58,10 @@ public class PlayerController : MonoBehaviour
             {
                 StartCooking();
             }
+            else if (isCooked) // Check if the pizza is cooked
+            {
+                PickUpCookedPizza(); // Allow player to pick up the cooked pizza
+            }
             else
             {
                 Debug.Log("Oven Full!");
@@ -96,6 +101,7 @@ public class PlayerController : MonoBehaviour
     {
         Destroy(currentPizza); // Destroy the pizza being held
         isCooking = true;
+        isCooked = false; // Reset the cooked state
         StartCoroutine(CookPizza());
     }
 
@@ -103,12 +109,17 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(cookingTime); // Cooking time (can be set as serialized field)
         isCooking = false;
+        isCooked = true; // Set pizza as cooked
         Debug.Log("Pizza has been cooked!");
-        // Allow the player to pick up the cooked pizza
-        if (IsInZone("OvenZone"))
+    }
+
+    private void PickUpCookedPizza()
+    {
+        if (IsInZone("OvenZone") && isCooked) // Ensure in the OvenZone and pizza is cooked
         {
             currentPizza = Instantiate(cookedPizzaPrefab, transform.position, Quaternion.identity);
             currentPizza.transform.SetParent(transform); // Attach cooked pizza to player
+            isCooked = false; // Reset the cooked state after picking up
         }
     }
 
