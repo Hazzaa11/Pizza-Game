@@ -532,6 +532,7 @@ GameObject:
   - component: {fileID: 518390386}
   - component: {fileID: 518390388}
   - component: {fileID: 518390387}
+  - component: {fileID: 518390389}
   m_Layer: 0
   m_Name: Oven
   m_TagString: Untagged
@@ -652,6 +653,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &518390389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518390385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9fda15d5514ac4449ba82d3ebb82950, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cookedPizzaPrefab: {fileID: 4538747206896162943, guid: f9fed348b81d4254e948e6a7daf1f96c, type: 3}
+  cookingTime: 5
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
