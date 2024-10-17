@@ -1,98 +1,178 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;  // Maximum movement speed
-    [SerializeField] private float acceleration = 10f;  // How quickly the player reaches full speed
-    [SerializeField] private float deceleration = 15f;  // How quickly the player stops when no input
-
-    private Vector2 currentVelocity;  // Keeps track of player's velocity
-    private Rigidbody2D rb;
-    private PizzaMaker pizzaMaker; // Reference to the PizzaMaker script
-    private Oven oven; // Reference to the Oven script
-    private GameObject heldPizza; // Reference to the currently held pizza
-    private bool isHoldingPizza = false; // To track if the player is holding a pizza
+    public GameObject pizzaPrefab; // Reference to the pizza prefab
+    public GameObject cookedPizzaPrefab; // Reference to the cooked pizza prefab
+    private GameObject currentPizza; // The pizza currently being held
+    private bool isCooking = false; // Track if the oven is cooking
+    public float cookingTime = 5f; // Serialized field for cooking time
+    public float moveSpeed = 5f; // Serialized field for movement speed
+    private Rigidbody2D rb; // Reference to the Rigidbody2D component
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        pizzaMaker = FindObjectOfType<PizzaMaker>(); // Get the PizzaMaker instance
-        oven = FindObjectOfType<Oven>(); // Get the Oven instance
+        rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
     }
 
     private void Update()
     {
-        // Get input for movement (WASD or arrow keys)
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
+        // Get input from the axes
+        float horizontalInput = Input.GetAxis("Horizontal"); // A/D or Left/Right arrows
+        float verticalInput = Input.GetAxis("Vertical"); // W/S or Up/Down arrows
+        Vector2 movement = new Vector2(horizontalInput, verticalInput);
 
-        // Normalize input to avoid diagonal speed boost
-        Vector2 inputVector = new Vector2(moveX, moveY).normalized;
-
-        if (inputVector.magnitude > 0) // If there is input, accelerate towards the direction
+        if (movement.magnitude > 1)
         {
-            currentVelocity = Vector2.MoveTowards(currentVelocity, inputVector * moveSpeed, acceleration * Time.deltaTime);
-        }
-        else // If no input, decelerate to a stop
-        {
-            currentVelocity = Vector2.MoveTowards(currentVelocity, Vector2.zero, deceleration * Time.deltaTime);
+            movement.Normalize();
         }
 
-        // Apply the movement to the Rigidbody2D
-        rb.velocity = currentVelocity;
+        rb.velocity = movement * moveSpeed; // Directly set the velocity for instant stopping
 
-        // Check for interaction key (E) and if player is in the PizzaMaker zone and not holding a pizza
-        if (Input.GetKeyDown(KeyCode.E) && IsInPizzaMakerZone() && !isHoldingPizza)
+        // Check for interaction input
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            heldPizza = pizzaMaker.SpawnPizza(transform); // Spawn pizza and save reference
-            isHoldingPizza = true; // Set the flag to true when spawning pizza
-        }
-
-        // Check for interaction key (E) with Oven
-        if (Input.GetKeyDown(KeyCode.E) && IsInOvenZone() && isHoldingPizza)
-        {
-            oven.StartCooking(transform); // Start cooking the pizza
-            DestroyHeldPizza(); // Destroy the held pizza after starting the cooking process
-        }
-
-        // Check for collecting the cooked pizza
-        if (Input.GetKeyDown(KeyCode.E) && IsInOvenZone())
-        {
-            oven.CollectPizza(transform); // Collect the cooked pizza
+            TryInteract();
         }
     }
 
-    // Placeholder for checking if the player is in the PizzaMaker zone
-    private bool IsInPizzaMakerZone()
+    private void TryInteract()
     {
-        // Call the method from PizzaMaker
-        return pizzaMaker.IsPlayerInZone(this.transform);
-    }
-
-    // Placeholder for checking if the player is in the Oven zone
-    private bool IsInOvenZone()
-    {
-        // Call the method from Oven
-        return oven.IsPlayerInZone(this.transform);
-    }
-
-    // Method to set the holding pizza status
-    public void SetHoldingPizza(bool holding)
-    {
-        isHoldingPizza = holding; // Update the holding status
-    }
-
-    // Method to destroy the held pizza
-    private void DestroyHeldPizza()
-    {
-        if (heldPizza != null)
+        // Check for interactions based on current zone
+        if (IsInZone("PizzaMakerZone"))
         {
-            Destroy(heldPizza); // Destroy the pizza object
-            heldPizza = null; // Reset the reference
+            if (currentPizza == null)
+            {
+                PickUpPizza();
+            }
+            else
+            {
+                Debug.Log("Hands Full!");
+            }
         }
-        isHoldingPizza = false; // Update the holding status
-        Debug.Log("Pizza has been put in the oven!");
+        else if (IsInZone("OvenZone"))
+        {
+            if (currentPizza != null && !isCooking)
+            {
+                StartCooking();
+            }
+            else
+            {
+                Debug.Log("Oven Full!");
+            }
+        }
+        else if (IsInZone("ServingZone"))
+        {
+            ServePizza();
+        }
+        else if (IsInZone("TrashZone"))
+        {
+            DisposePizza();
+        }
+    }
+
+    public bool IsInZone(string zoneTag) // Change to public
+    {
+        // Check if the player is inside a zone by checking tags
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag(zoneTag))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void PickUpPizza()
+    {
+        currentPizza = Instantiate(pizzaPrefab, transform.position, Quaternion.identity);
+        currentPizza.transform.SetParent(transform); // Attach pizza to player
+    }
+
+    private void StartCooking()
+    {
+        Destroy(currentPizza); // Destroy the pizza being held
+        isCooking = true;
+        StartCoroutine(CookPizza());
+    }
+
+    private IEnumerator CookPizza() // Coroutine to cook pizza
+    {
+        yield return new WaitForSeconds(cookingTime); // Cooking time (can be set as serialized field)
+        isCooking = false;
+        Debug.Log("Pizza has been cooked!");
+        // Allow the player to pick up the cooked pizza
+        if (IsInZone("OvenZone"))
+        {
+            currentPizza = Instantiate(cookedPizzaPrefab, transform.position, Quaternion.identity);
+            currentPizza.transform.SetParent(transform); // Attach cooked pizza to player
+        }
+    }
+
+    private void ServePizza()
+    {
+        if (currentPizza != null && currentPizza.CompareTag("Cooked"))
+        {
+            Debug.Log("Pizza served!");
+            Destroy(currentPizza); // Destroy the served pizza
+        }
+        else
+        {
+            Debug.Log("Cannot serve a pizza that is not cooked!");
+        }
+    }
+
+    private void DisposePizza()
+    {
+        if (currentPizza != null)
+        {
+            Destroy(currentPizza); // Destroy the held pizza
+            Debug.Log("Pizza disposed!");
+        }
+    }
+
+    // Methods for enabling and disabling interaction
+    public void EnableOvenInteraction()
+    {
+        Debug.Log("Oven interaction enabled");
+    }
+
+    public void DisableOvenInteraction()
+    {
+        Debug.Log("Oven interaction disabled");
+    }
+
+    public void EnableTrashInteraction()
+    {
+        Debug.Log("Trash interaction enabled");
+    }
+
+    public void DisableTrashInteraction()
+    {
+        Debug.Log("Trash interaction disabled");
+    }
+
+    public void EnablePizzaMakerInteraction()
+    {
+        Debug.Log("Pizza maker interaction enabled");
+    }
+
+    public void DisablePizzaMakerInteraction()
+    {
+        Debug.Log("Pizza maker interaction disabled");
+    }
+
+    // Add methods for serving table interaction
+    public void EnableServingTableInteraction()
+    {
+        Debug.Log("Serving table interaction enabled");
+    }
+
+    public void DisableServingTableInteraction()
+    {
+        Debug.Log("Serving table interaction disabled");
     }
 }

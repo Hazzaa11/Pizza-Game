@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class PizzaMaker : MonoBehaviour
+public class Trash : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<PlayerController>().EnablePizzaMakerInteraction();
+            other.GetComponent<PlayerController>().EnableTrashInteraction();
         }
     }
 
@@ -14,7 +14,7 @@ public class PizzaMaker : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<PlayerController>().DisablePizzaMakerInteraction();
+            other.GetComponent<PlayerController>().DisableTrashInteraction();
         }
     }
 
@@ -22,9 +22,9 @@ public class PizzaMaker : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (other.GetComponent<PlayerController>().IsInZone("PizzaMakerZone"))
+            if (other.GetComponent<PlayerController>().IsInZone("TrashZone"))
             {
-                other.GetComponent<PlayerController>().EnablePizzaMakerInteraction();
+                other.GetComponent<PlayerController>().EnableTrashInteraction();
             }
         }
     }
